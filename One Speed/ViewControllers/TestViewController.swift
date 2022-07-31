@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Foundation
 
 class TestViewController: UIViewController {
     
@@ -14,69 +15,94 @@ class TestViewController: UIViewController {
     @IBOutlet weak var testButton: UIButton!
     
     @IBAction func testButtonAction(_ sender: Any) {
-        testButtonFunctionality()
+        timer?.invalidate()
+        testButtonActionFunctionality()
     }
     
     var startTime: CFAbsoluteTime!
     var bytesReceived: Int = 0
     var speedTestCompletionHandler: ((Result<Double, Error>) -> Void)?
+    var counter = 15
+    var timer: Timer?
+    var speedTestResult: Test!
+    var testData: [Test] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        loadData()
     }
     
     func setupUI() {
         tabBarController?.tabBar.items![0].title = "Test"
-        tabBarController?.tabBar.items![0].image = UIImage(systemName: "person")
         tabBarController?.tabBar.items![1].title = "History"
+        tabBarController?.tabBar.items![0].image = UIImage(systemName: "network")
+        tabBarController?.tabBar.items![1].image = UIImage(systemName: "clock")
         testButton.layer.cornerRadius = 12
         testButton.clipsToBounds = true
     }
     
-    func testDownloadSpeed(timeout: TimeInterval, completionHandler: @escaping (Result<Double, Error>) -> Void) {
-        let url = URL(string: "https://hajifirouz10.cdn.asset.aparat.com/aparat-video/e7b4cd9407047dc54307d54c68eabead46478494-1080p.mp4?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6IjAzYTkyYjNmZWI1MTkwMzlmODY2M2JiZjgwMDM2ZGU0IiwiZXhwIjoxNjU4ODU0OTExLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.2ju6eZSOBw8XvWeVxnDsz26RE4x_Bx5uWQjGqDbiBGU")!
-        startTime = CFAbsoluteTimeGetCurrent()
-        bytesReceived = 0
-        speedTestCompletionHandler = completionHandler
-        print(timeout)
-        let configuration = URLSessionConfiguration.ephemeral
-        configuration.timeoutIntervalForResource = timeout
-//        testButton.isEnabled = false
-        let session = URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
-        session.dataTask(with: url).resume()
-        session.finishTasksAndInvalidate()
-    }
-    
-    fileprivate func testButtonFunctionality() {
-        testButton.isEnabled = true
-        testDownloadSpeed(timeout: 15) { [self] result in
+    func testButtonActionFunctionality() {
+        testDownloadSpeed(timeout: TimeInterval(counter)) { [self] result in
             switch result {
             case .failure(let error):
                 print(error)
-                AlertManager.shared.showAlert(parent: self, title: "Sorry :( ", body: "There's just an error for checking internet speed. Please try again", buttonTitles: ["OK"], showCancelButton: false) { _ in
-                    print("OK")
-                }
             case .success(let megabytesPerSecond):
-                print("Speed in MB/S", megabytesPerSecond)
+                print(megabytesPerSecond)
+                let downloadResult = megabytesPerSecond.rounded(decimalPoint: 2)
+                speedTestResult = Test(download: downloadResult.description, upload: "", date: .now)
+                testData.append(speedTestResult)
+                saveData()
                 DispatchQueue.main.async {[self] in
-                    downloadLabel.text = "\(megabytesPerSecond)" + "MB/S"
+                    downloadLabel.text = downloadResult.description + "MB/S"
                 }
             }
         }
     }
     
-}
-//MARK: - Setup Session Functions:
-extension TestViewController: URLSessionDataDelegate {
+    func setupTimer() {
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(handleTimerAction), userInfo: nil, repeats: true)
+    }
     
+    @objc private func handleTimerAction() {
+        counter = counter - 1
+        if counter > 0 {
+            print("It takes \(counter) seconds to finish")
+            testButton.isEnabled = false
+            testButton.setTitle("\(counter) Seconds", for: .normal)
+        } else if counter == 0 {
+            print("Task Finished")
+            timer?.invalidate()
+            timer = nil
+            counter = 15
+            testButton.isEnabled = true
+            testButton.setTitle("Test Speed", for: .normal)
+        }
+    }
+    
+    func testDownloadSpeed(timeout: TimeInterval, completionHandler: @escaping (Result<Double, Error>) -> Void) {
+        let url = URL(string: "https://updates.cdn-apple.com/2022SummerFCS/fullrestores/012-41728/C0769E31-5F11-4F6F-AF48-58175F955F51/iPhone14,5_15.6_19G71_Restore.ipsw")!
+        setupTimer()
+        startTime = CFAbsoluteTimeGetCurrent()
+        bytesReceived = 0
+        speedTestCompletionHandler = completionHandler
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.timeoutIntervalForResource = timeout
+        let session = URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
+        session.dataTask(with: url).resume()
+        session.finishTasksAndInvalidate()
+    }
+}
+
+//MARK: URLSession URLSessionDataDelegate:
+extension TestViewController: URLSessionDataDelegate {
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         bytesReceived += data.count
     }
 }
 
+//MARK: URLSession URLSessionDelegate:
 extension TestViewController: URLSessionDelegate {
-    
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         let stopTime = CFAbsoluteTimeGetCurrent()
         let elapsed = stopTime - startTime
@@ -86,5 +112,30 @@ extension TestViewController: URLSessionDelegate {
         }
         let speed = elapsed != 0 ? Double(bytesReceived) / elapsed / 1024.0 / 1024.0 : -1
         speedTestCompletionHandler?(.success(speed))
+    }
+}
+
+//MARK: Save Data:
+extension TestViewController {
+    
+    func saveData() {
+        do {
+            let encoder = JSONEncoder()
+            let data = try encoder.encode(testData)
+            UserDefaults.standard.set(data, forKey: "TestData")
+        } catch {
+            print("Unable to Encode data (\(error))")
+        }
+    }
+    
+    func loadData() {
+        if let data = UserDefaults.standard.data(forKey: "TestData") {
+            do {
+                let decoder = JSONDecoder()
+                testData = try decoder.decode([Test].self, from: data)
+            } catch {
+                print("Unable to Decode data (\(error))")
+            }
+        }
     }
 }
