@@ -34,6 +34,8 @@ class TestViewController: UIViewController {
     }
     
     func setupUI() {
+        title = "Test Your Network!"
+        navigationController?.navigationBar.prefersLargeTitles = true
         tabBarController?.tabBar.items![0].title = "Test"
         tabBarController?.tabBar.items![1].title = "History"
         tabBarController?.tabBar.items![0].image = UIImage(systemName: "network")
@@ -50,7 +52,7 @@ class TestViewController: UIViewController {
             case .success(let megabytesPerSecond):
                 print(megabytesPerSecond)
                 let downloadResult = megabytesPerSecond.rounded(decimalPoint: 2)
-                speedTestResult = Test(download: downloadResult.description, upload: "", date: .now)
+                speedTestResult = Test(download: downloadResult.description, upload: "", date: Date().shortDateTime)
                 testData.append(speedTestResult)
                 saveData()
                 DispatchQueue.main.async {[self] in

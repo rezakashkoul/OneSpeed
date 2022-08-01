@@ -23,11 +23,17 @@ class HistoryViewController: UIViewController {
         super.viewDidLoad()
         
         setupTableView()
+        setupUI()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         loadData()
+    }
+    
+    func setupUI() {
+        title = "History"
+        navigationController?.navigationBar.prefersLargeTitles = true
     }
 
     func setupTableView() {
@@ -50,7 +56,7 @@ extension HistoryViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return testData[section].date?.description
+        return testData[section].date
     }
     
     
