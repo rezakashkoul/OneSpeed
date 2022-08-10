@@ -8,5 +8,5 @@
 import Foundation
 
 struct Test: Codable {
-    let download, upload, date: String
+    var download, upload, date: String
 }

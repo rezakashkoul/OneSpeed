@@ -32,13 +32,14 @@ class HistoryViewController: UIViewController {
     }
     
     func setupUI() {
-        title = "History"
+        title = "SPD History"
         navigationController?.navigationBar.prefersLargeTitles = true
     }
 
     func setupTableView() {
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.register(UINib(nibName: "TableViewCell", bundle: nil), forCellReuseIdentifier: "TableViewCell")
     }
 }
 
@@ -50,15 +51,15 @@ extension HistoryViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = "Download: " + testData[indexPath.row].download + "/ " + "Upload :" + testData[indexPath.row].upload
+        let cell = tableView.dequeueReusableCell(withIdentifier: "TableViewCell", for: indexPath) as! TableViewCell
+        cell.setupCell(download: testData[indexPath.row].download,
+                       upload: testData[indexPath.row].upload)
         return cell
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return testData[section].date
+        return "Test Serial \(section+1)." + " on " + testData[section].date
     }
-    
     
 }
 

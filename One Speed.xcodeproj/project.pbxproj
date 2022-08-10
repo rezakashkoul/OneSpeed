@@ -18,6 +18,8 @@
 		F70ABF442896C0EE00B90BCB /* Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70ABF432896C0EE00B90BCB /* Test.swift */; };
 		F74D9ECB288FEEBB00106654 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74D9ECA288FEEBB00106654 /* Reachability.swift */; };
 		F74D9ECE2890002200106654 /* HistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74D9ECD2890002200106654 /* HistoryViewController.swift */; };
+		F77ED43928A40EE90013F80A /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77ED43728A40EE90013F80A /* TableViewCell.swift */; };
+		F77ED43A28A40EE90013F80A /* TableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F77ED43828A40EE90013F80A /* TableViewCell.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +36,8 @@
 		F70ABF432896C0EE00B90BCB /* Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Test.swift; sourceTree = "<group>"; };
 		F74D9ECA288FEEBB00106654 /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		F74D9ECD2890002200106654 /* HistoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewController.swift; sourceTree = "<group>"; };
+		F77ED43728A40EE90013F80A /* TableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
+		F77ED43828A40EE90013F80A /* TableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TableViewCell.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +75,7 @@
 				F70ABF452896C0F200B90BCB /* Models */,
 				F74D9ECF2890002800106654 /* ViewControllers */,
 				EB79467D2882DADE0014723D /* Main.storyboard */,
+				F77ED43C28A40F080013F80A /* TableViewCell */,
 				F74D9ECC288FEEC000106654 /* Helpers */,
 				EB7946802882DAE00014723D /* Assets.xcassets */,
 				EB7946822882DAE00014723D /* LaunchScreen.storyboard */,
@@ -104,6 +109,15 @@
 				F74D9ECD2890002200106654 /* HistoryViewController.swift */,
 			);
 			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		F77ED43C28A40F080013F80A /* TableViewCell */ = {
+			isa = PBXGroup;
+			children = (
+				F77ED43728A40EE90013F80A /* TableViewCell.swift */,
+				F77ED43828A40EE90013F80A /* TableViewCell.xib */,
+			);
+			path = TableViewCell;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -165,6 +179,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EB7946842882DAE00014723D /* LaunchScreen.storyboard in Resources */,
+				F77ED43A28A40EE90013F80A /* TableViewCell.xib in Resources */,
 				EB7946812882DAE00014723D /* Assets.xcassets in Resources */,
 				EB79467F2882DADE0014723D /* Main.storyboard in Resources */,
 			);
@@ -180,6 +195,7 @@
 				EB79467C2882DADE0014723D /* TestViewController.swift in Sources */,
 				EB7946782882DADE0014723D /* AppDelegate.swift in Sources */,
 				F70879A9289022300088B5FE /* AlertManager.swift in Sources */,
+				F77ED43928A40EE90013F80A /* TableViewCell.swift in Sources */,
 				F74D9ECB288FEEBB00106654 /* Reachability.swift in Sources */,
 				F74D9ECE2890002200106654 /* HistoryViewController.swift in Sources */,
 				F70ABF442896C0EE00B90BCB /* Test.swift in Sources */,

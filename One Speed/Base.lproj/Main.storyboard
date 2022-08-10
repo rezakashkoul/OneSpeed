@@ -18,11 +18,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vwL-YH-hzh">
-                                <rect key="frame" x="122" y="524" width="170" height="50"/>
+                                <rect key="frame" x="100" y="663" width="214" height="50"/>
                                 <color key="backgroundColor" name="AccentColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="8qh-qi-spL"/>
-                                    <constraint firstAttribute="width" constant="170" id="X4t-IW-e16"/>
                                 </constraints>
                                 <color key="tintColor" systemColor="systemBackgroundColor"/>
                                 <state key="normal" title="Button"/>
@@ -34,7 +33,7 @@
                                 </connections>
                             </button>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="Caz-Ub-e6A" userLabel="Download Stack View">
-                                <rect key="frame" x="116.5" y="188" width="181.5" height="68"/>
+                                <rect key="frame" x="116.5" y="138" width="181.5" height="68"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Download Speed" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="23s-Wc-lRK">
                                         <rect key="frame" x="0.0" y="0.0" width="181.5" height="27.5"/>
@@ -51,7 +50,7 @@
                                 </subviews>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="QBJ-3i-FG8" userLabel="Upload Stack View">
-                                <rect key="frame" x="132" y="356" width="150.5" height="68"/>
+                                <rect key="frame" x="132" y="226" width="150.5" height="68"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Upload Speed" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="52g-Wn-fvR">
                                         <rect key="frame" x="0.0" y="0.0" width="150.5" height="27.5"/>
@@ -71,19 +70,20 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="QBJ-3i-FG8" firstAttribute="top" secondItem="Caz-Ub-e6A" secondAttribute="bottom" constant="100" id="97A-wi-7ov"/>
-                            <constraint firstItem="QBJ-3i-FG8" firstAttribute="centerX" secondItem="Caz-Ub-e6A" secondAttribute="centerX" id="Kgy-Ao-ntJ"/>
-                            <constraint firstItem="Caz-Ub-e6A" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="MAh-Va-mEN"/>
-                            <constraint firstItem="vwL-YH-hzh" firstAttribute="centerX" secondItem="Caz-Ub-e6A" secondAttribute="centerX" id="Y3G-Qj-jUd"/>
-                            <constraint firstItem="vwL-YH-hzh" firstAttribute="top" secondItem="QBJ-3i-FG8" secondAttribute="bottom" constant="100" id="hzg-gH-d65"/>
-                            <constraint firstItem="Caz-Ub-e6A" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="100" id="rfN-Xt-qKp"/>
+                            <constraint firstItem="vwL-YH-hzh" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="100" id="BES-jn-ook"/>
+                            <constraint firstItem="QBJ-3i-FG8" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="RUL-QI-vKZ"/>
+                            <constraint firstItem="Caz-Ub-e6A" firstAttribute="centerX" secondItem="QBJ-3i-FG8" secondAttribute="centerX" id="YrG-Eg-JZP"/>
+                            <constraint firstItem="Caz-Ub-e6A" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="50" id="f6I-ec-c04"/>
+                            <constraint firstItem="QBJ-3i-FG8" firstAttribute="top" secondItem="Caz-Ub-e6A" secondAttribute="bottom" constant="20" id="ii8-Rt-jws"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="vwL-YH-hzh" secondAttribute="trailing" constant="100" id="n1e-Z0-U8k"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="vwL-YH-hzh" secondAttribute="bottom" constant="100" id="xFF-qc-rzT"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="jxt-xH-Iwe"/>
                     <connections>
                         <outlet property="downloadLabel" destination="rmG-AJ-oIZ" id="0Hy-UB-eHU"/>
                         <outlet property="testButton" destination="vwL-YH-hzh" id="wrZ-sE-Z7U"/>
-                        <outlet property="uploadLabel" destination="52g-Wn-fvR" id="5IP-ax-oTR"/>
+                        <outlet property="uploadLabel" destination="Enl-Ti-6Vi" id="s99-cy-T0k"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -102,7 +102,7 @@
                                 <rect key="frame" x="0.0" y="88" width="414" height="725"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cell" id="GXf-W5-ZGg">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="GXf-W5-ZGg">
                                         <rect key="frame" x="0.0" y="44.5" width="414" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="GXf-W5-ZGg" id="iRL-IJ-GSo">

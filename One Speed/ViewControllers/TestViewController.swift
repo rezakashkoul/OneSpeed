@@ -22,9 +22,9 @@ class TestViewController: UIViewController {
     var startTime: CFAbsoluteTime!
     var bytesReceived: Int = 0
     var speedTestCompletionHandler: ((Result<Double, Error>) -> Void)?
-    var counter = 15
+    var counter = 5 //20
     var timer: Timer?
-    var speedTestResult: Test!
+    var speedTestResult = Test(download: "", upload: "", date: Date().shortDateTime.description)
     var testData: [Test] = []
     
     override func viewDidLoad() {
@@ -44,47 +44,74 @@ class TestViewController: UIViewController {
         testButton.clipsToBounds = true
     }
     
+    func updateDownloadSpeed(speed: Int) {
+        downloadLabel.text = (Double(speed) / 1024.0 / 1024.0).rounded(decimalPoint: 2).description + "MB/S"
+    }
+    
+    func updateUploadSpeed(speed: Int64) {
+        let uploadSpeed = (Double(speed) / 1024.0 / 1024.0).rounded(decimalPoint: 2).description + "MB/S"
+        uploadLabel.text = uploadSpeed
+        speedTestResult.upload = uploadSpeed.description
+        testData.append(speedTestResult)
+        saveData()
+    }
+    
     func testButtonActionFunctionality() {
-        testDownloadSpeed(timeout: TimeInterval(counter)) { [self] result in
+        startDownload(timeout: TimeInterval(counter)) { [self] result in
             switch result {
             case .failure(let error):
                 print(error)
+                speedTestResult.download = "Error"
+                startUpload()
+                DispatchQueue.main.async {[self] in
+                    downloadLabel.text = "Error!"
+                }
             case .success(let megabytesPerSecond):
                 print(megabytesPerSecond)
                 let downloadResult = megabytesPerSecond.rounded(decimalPoint: 2)
-                speedTestResult = Test(download: downloadResult.description, upload: "", date: Date().shortDateTime)
-                testData.append(speedTestResult)
-                saveData()
+                speedTestResult.download = downloadResult.description
                 DispatchQueue.main.async {[self] in
                     downloadLabel.text = downloadResult.description + "MB/S"
                 }
+                startUpload()
             }
         }
     }
     
-    func setupTimer() {
-        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(handleTimerAction), userInfo: nil, repeats: true)
-    }
+//    func setupTimer() {
+//        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(handleTimerAction), userInfo: nil, repeats: true)
+//    }
     
-    @objc private func handleTimerAction() {
-        counter = counter - 1
-        if counter > 0 {
-            print("It takes \(counter) seconds to finish")
-            testButton.isEnabled = false
-            testButton.setTitle("\(counter) Seconds", for: .normal)
-        } else if counter == 0 {
-            print("Task Finished")
-            timer?.invalidate()
-            timer = nil
-            counter = 15
-            testButton.isEnabled = true
-            testButton.setTitle("Test Speed", for: .normal)
-        }
-    }
+//    @objc private func handleTimerAction() {
+//        DispatchQueue.main.async {
+//            self.testButton.isEnabled = false
+//        }
+////        counter = counter - 1
+////        if counter > 0 {
+////            print("It takes \(counter) seconds to finish")
+////            DispatchQueue.main.async {[self] in
+////                testButton.isEnabled = false
+////                testButton.setTitle("\(counter) Seconds", for: .normal)
+////            }
+////
+////
+////        } else if counter == 0 {
+////            print("Task Finished")
+////            timer?.invalidate()
+////            timer = nil
+////            counter = 15
+////            DispatchQueue.main.async {[self] in
+////                testButton.isEnabled = true
+////                testButton.setTitle("Test Speed", for: .normal)
+////            }
+////
+////        }
+//    }
     
-    func testDownloadSpeed(timeout: TimeInterval, completionHandler: @escaping (Result<Double, Error>) -> Void) {
+    func startDownload(timeout: TimeInterval, completionHandler: @escaping (Result<Double, Error>) -> Void) {
+        print("Starting download")
         let url = URL(string: "https://updates.cdn-apple.com/2022SummerFCS/fullrestores/012-41728/C0769E31-5F11-4F6F-AF48-58175F955F51/iPhone14,5_15.6_19G71_Restore.ipsw")!
-        setupTimer()
+//        setupTimer()
         startTime = CFAbsoluteTimeGetCurrent()
         bytesReceived = 0
         speedTestCompletionHandler = completionHandler
@@ -94,17 +121,66 @@ class TestViewController: UIViewController {
         session.dataTask(with: url).resume()
         session.finishTasksAndInvalidate()
     }
-}
-
-//MARK: URLSession URLSessionDataDelegate:
-extension TestViewController: URLSessionDataDelegate {
-    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-        bytesReceived += data.count
+    
+    func startUpload() {
+        print("Starting upload")
+//        setupTimer()
+        var allData:[String: Data] = [:]
+        if let file = (0...1000).compactMap({_ in UUID().uuidString}).description.data(using: .utf8) {
+            for i in 0...1000 {
+                allData["file \(i)"] = file
+            }
+        }
+        upload(timeout: TimeInterval(counter), data: allData.compactMap({$0.value}).reduce(Data(), +))
+    }
+    
+    func upload(timeout: TimeInterval, data: Data) {
+        var request = URLRequest(url: NSURL(string: "https://www.filestackapi.com/api/store/S3?key=MY_API_KEY")! as URL)
+        request.httpMethod = "POST"
+        request.setValue("Keep-Alive", forHTTPHeaderField: "Connection")
+        request.setValue("image/png", forHTTPHeaderField: "Content")
+        let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForResource = timeout
+        let session = URLSession(configuration: configuration, delegate: self, delegateQueue: .main)
+        let dataTask = session.uploadTask(with: request, from: data) { [self] (data, response, error) in
+            if let httpResponse = response as? HTTPURLResponse {
+                print("response code: \(httpResponse.statusCode)")
+                if httpResponse.statusCode != 200 {
+                    print("failed upload")
+                    DispatchQueue.main.async {[self] in
+                        uploadLabel.text = "Error!"
+                        speedTestResult.upload = "Error!"
+                    }
+                } else {
+                    print("success upload")
+                }
+//                DispatchQueue.main.async {
+//                    self.testButton.isEnabled = true
+//                }
+            }
+            if let error = error {
+                print("upload error",error.localizedDescription)
+                speedTestResult.upload = "Error!"
+                DispatchQueue.main.async {[self] in
+                    testButton.isEnabled = true
+                }
+            }
+        }
+        dataTask.resume()
     }
 }
 
-//MARK: URLSession URLSessionDelegate:
-extension TestViewController: URLSessionDelegate {
+//MARK: Download URLSessionDataDelegate , URLSessionDelegate:
+extension TestViewController: URLSessionDataDelegate, URLSessionDelegate {
+    
+    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+        bytesReceived += data.count
+        DispatchQueue.main.async { [self] in
+            updateDownloadSpeed(speed: data.count)
+        }
+        
+    }
+    
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         let stopTime = CFAbsoluteTimeGetCurrent()
         let elapsed = stopTime - startTime
@@ -117,7 +193,21 @@ extension TestViewController: URLSessionDelegate {
     }
 }
 
-//MARK: Save Data:
+//MARK: Upload URLSessionTaskDelegate:
+extension TestViewController: URLSessionTaskDelegate {
+    
+    func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
+        let progress:Float = Float(totalBytesSent) / Float(totalBytesExpectedToSend)
+        print("progress", progress)
+        DispatchQueue.main.async {[self] in
+            updateUploadSpeed(speed: bytesSent)
+        }
+        let data = Double(bytesSent)
+//        speedTestCompletionHandler?(.success(data))
+    }
+}
+
+//MARK: Save and load Data:
 extension TestViewController {
     
     func saveData() {
