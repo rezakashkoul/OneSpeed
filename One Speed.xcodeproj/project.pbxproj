@@ -20,6 +20,7 @@
 		F74D9ECE2890002200106654 /* HistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74D9ECD2890002200106654 /* HistoryViewController.swift */; };
 		F77ED43928A40EE90013F80A /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77ED43728A40EE90013F80A /* TableViewCell.swift */; };
 		F77ED43A28A40EE90013F80A /* TableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F77ED43828A40EE90013F80A /* TableViewCell.xib */; };
+		F7A384DB28A7F46700CA8D3E /* SlideUpAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A384DA28A7F46700CA8D3E /* SlideUpAnimator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 		F74D9ECD2890002200106654 /* HistoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewController.swift; sourceTree = "<group>"; };
 		F77ED43728A40EE90013F80A /* TableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
 		F77ED43828A40EE90013F80A /* TableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TableViewCell.xib; sourceTree = "<group>"; };
+		F7A384DA28A7F46700CA8D3E /* SlideUpAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SlideUpAnimator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +98,7 @@
 		F74D9ECC288FEEC000106654 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				F7A384DA28A7F46700CA8D3E /* SlideUpAnimator.swift */,
 				F70879A8289022300088B5FE /* AlertManager.swift */,
 				F74D9ECA288FEEBB00106654 /* Reachability.swift */,
 			);
@@ -193,6 +196,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EB79467C2882DADE0014723D /* TestViewController.swift in Sources */,
+				F7A384DB28A7F46700CA8D3E /* SlideUpAnimator.swift in Sources */,
 				EB7946782882DADE0014723D /* AppDelegate.swift in Sources */,
 				F70879A9289022300088B5FE /* AlertManager.swift in Sources */,
 				F77ED43928A40EE90013F80A /* TableViewCell.swift in Sources */,
