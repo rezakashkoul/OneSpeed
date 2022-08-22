@@ -32,58 +32,28 @@
                                     <action selector="testButtonAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ZU8-Z0-kQj"/>
                                 </connections>
                             </button>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="Caz-Ub-e6A" userLabel="Download Stack View">
-                                <rect key="frame" x="116.5" y="138" width="181.5" height="68"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Download Speed" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="23s-Wc-lRK">
-                                        <rect key="frame" x="0.0" y="0.0" width="181.5" height="27.5"/>
-                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="23"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rmG-AJ-oIZ">
-                                        <rect key="frame" x="0.0" y="47.5" width="181.5" height="20.5"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
-                            </stackView>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="QBJ-3i-FG8" userLabel="Upload Stack View">
-                                <rect key="frame" x="132" y="226" width="150.5" height="68"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Upload Speed" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="52g-Wn-fvR">
-                                        <rect key="frame" x="0.0" y="0.0" width="150.5" height="27.5"/>
-                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="23"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Enl-Ti-6Vi">
-                                        <rect key="frame" x="68" y="47.5" width="14" height="20.5"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
-                            </stackView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Speed" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="23s-Wc-lRK">
+                                <rect key="frame" x="172.5" y="532" width="69" height="28"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="23"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="vwL-YH-hzh" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="100" id="BES-jn-ook"/>
-                            <constraint firstItem="QBJ-3i-FG8" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="RUL-QI-vKZ"/>
-                            <constraint firstItem="Caz-Ub-e6A" firstAttribute="centerX" secondItem="QBJ-3i-FG8" secondAttribute="centerX" id="YrG-Eg-JZP"/>
-                            <constraint firstItem="Caz-Ub-e6A" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="50" id="f6I-ec-c04"/>
-                            <constraint firstItem="QBJ-3i-FG8" firstAttribute="top" secondItem="Caz-Ub-e6A" secondAttribute="bottom" constant="20" id="ii8-Rt-jws"/>
+                            <constraint firstItem="23s-Wc-lRK" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="TUa-Fy-8NX"/>
+                            <constraint firstItem="vwL-YH-hzh" firstAttribute="top" secondItem="23s-Wc-lRK" secondAttribute="bottom" constant="103" id="e1n-ay-kdE"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="vwL-YH-hzh" secondAttribute="trailing" constant="100" id="n1e-Z0-U8k"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="vwL-YH-hzh" secondAttribute="bottom" constant="100" id="xFF-qc-rzT"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="jxt-xH-Iwe"/>
                     <connections>
-                        <outlet property="downloadLabel" destination="rmG-AJ-oIZ" id="0Hy-UB-eHU"/>
+                        <outlet property="downloadLabel" destination="23s-Wc-lRK" id="LCG-He-qUO"/>
                         <outlet property="testButton" destination="vwL-YH-hzh" id="wrZ-sE-Z7U"/>
-                        <outlet property="uploadLabel" destination="Enl-Ti-6Vi" id="s99-cy-T0k"/>
+                        <outlet property="uploadLabel" destination="23s-Wc-lRK" id="lh9-SO-1ge"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

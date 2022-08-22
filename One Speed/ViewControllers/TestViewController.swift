@@ -7,6 +7,7 @@
 
 import UIKit
 import Foundation
+import GaugeSlider
 
 class TestViewController: UIViewController {
     
@@ -21,11 +22,13 @@ class TestViewController: UIViewController {
     var startTime: CFAbsoluteTime!
     var bytesReceived: Int = 0
     var speedTestCompletionHandler: ((Result<Double, Error>) -> Void)?
-    var counter = 20
+    var counter = 10
     var speedTestResult = Test(download: "", upload: "", date: Date().shortDateTime.description)
     var testData: [Test] = []
     var isTesting = false
-    
+    var isDownload = true
+    let gaugeSlider = GaugeSliderView()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -37,6 +40,7 @@ class TestViewController: UIViewController {
         view.slideUpViews(delay: 0.5)
     }
     
+    
     fileprivate func setupUI() {
         title = "Test Your Network!"
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -46,6 +50,44 @@ class TestViewController: UIViewController {
         tabBarController?.tabBar.items![1].image = UIImage(systemName: "clock")
         testButton.layer.cornerRadius = 12
         testButton.clipsToBounds = true
+        setupGuageView()
+    }
+    
+    fileprivate func setupGuageView() {
+        let width = UIScreen.main.bounds.width
+        
+        applyStyle(to: gaugeSlider)
+        gaugeSlider.frame = CGRect(x: width * 0.05, y: 150, width: width * 0.9, height: width * 0.9)
+        view.addSubview(gaugeSlider)
+        
+        
+//        gaugeSlider.onProgressChanged = { [weak self] progress in
+//            print("Progress: \(progress)")
+//
+//        }
+        
+//        gaugeSlider.onButtonAction = { [weak self] in
+//            print("Action executed")
+//        }
+        
+        view.backgroundColor = .white
+    }
+    
+    private func applyStyle(to v: GaugeSliderView) {
+        v.blankPathColor = UIColor(red: 218/255, green: 218/255, blue: 218/255, alpha: 1)
+        v.fillPathColor = isDownload ? UIColor(red: 47/255, green: 190/255, blue: 169/255, alpha: 1) : UIColor.tintColor
+        v.indicatorColor = isDownload ? UIColor(red: 47/255, green: 190/255, blue: 169/255, alpha: 1) : UIColor.tintColor
+        v.unitColor = UIColor(red: 74/255, green: 74/255, blue: 74/255, alpha: 1)
+        v.placeholderColor = UIColor(red: 139/255, green: 154/255, blue: 158/255, alpha: 1)
+        v.unitIndicatorColor = UIColor(red: 74/255, green: 74/255, blue: 74/255, alpha: 0.2)
+        v.customControlColor = UIColor(red: 47/255, green: 190/255, blue: 169/255, alpha: 1) // button color
+        v.delegationMode = .immediate(interval: 3)
+        v.isCustomControlActive = true
+        v.unit = " mb"
+        v.placeholder = isDownload ? "Download" : "Upload"
+        v.customControlButtonVisible = false
+        v.slideUpViews(delay: 2)
+        v.isUserInteractionEnabled = false
     }
     
     func updateDownloadSpeed(speed: Int) -> String {
@@ -75,14 +117,14 @@ class TestViewController: UIViewController {
                 speedTestResult.download = "Error"
                 startUpload()
                 DispatchQueue.main.async {[self] in
-                    downloadLabel.text = "Error!"
+//                    downloadLabel.text = "Error!"
                 }
             case .success(let megabytesPerSecond):
                 print(megabytesPerSecond)
                 let downloadResult = megabytesPerSecond.rounded(decimalPoint: 2)
                 speedTestResult.download = downloadResult.description
                 DispatchQueue.main.async {[self] in
-                    downloadLabel.text = downloadResult.description + "MB/S"
+//                    downloadLabel.text = downloadResult.description + "MB/S"
                 }
                 startUpload()
             }
@@ -91,6 +133,7 @@ class TestViewController: UIViewController {
     
     func startDownload(timeout: TimeInterval, completionHandler: @escaping (Result<Double, Error>) -> Void) {
         print("Starting download")
+        isDownload = true
         let url = URL(string: "https://updates.cdn-apple.com/2022SummerFCS/fullrestores/012-41728/C0769E31-5F11-4F6F-AF48-58175F955F51/iPhone14,5_15.6_19G71_Restore.ipsw")!
         startTime = CFAbsoluteTimeGetCurrent()
         bytesReceived = 0
@@ -103,6 +146,7 @@ class TestViewController: UIViewController {
     }
     
     func startUpload() {
+        isDownload = false
         print("Starting upload")
         var allData:[String: Data] = [:]
         if let file = (0...1000).compactMap({_ in UUID().uuidString}).description.data(using: .utf8) {
@@ -128,7 +172,7 @@ class TestViewController: UIViewController {
                     print("failed upload")
                     isTesting = false
                     DispatchQueue.main.async {[self] in
-                        uploadLabel.text = "Error!"
+//                        uploadLabel.text = "Error!"
                         speedTestResult.upload = "Error!"
                     }
                 } else {
@@ -139,6 +183,9 @@ class TestViewController: UIViewController {
             if let error = error {
                 print("upload error",error.localizedDescription)
                 speedTestResult.upload = "Error!"
+                DispatchQueue.main.async {[self] in
+                    gaugeSlider.setCurrentValue(0, animated: true)
+                }
                 isTesting = false
                 DispatchQueue.main.async {[self] in
                     testButton.isEnabled = true
@@ -155,7 +202,9 @@ extension TestViewController: URLSessionDataDelegate, URLSessionDelegate {
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         bytesReceived += data.count
         DispatchQueue.main.async { [self] in
+            let value = (Double(data.count) / 1024.0 / 1024.0).rounded(decimalPoint: 2)
             downloadLabel.text = updateDownloadSpeed(speed: data.count)
+            gaugeSlider.setCurrentValue(value*100, animated: true)
         }
         
     }
@@ -179,7 +228,8 @@ extension TestViewController: URLSessionTaskDelegate {
         let progress:Float = Float(totalBytesSent) / Float(totalBytesExpectedToSend)
         print("progress", progress)
         DispatchQueue.main.async {[self] in
-            uploadLabel.text = updateUploadSpeed(speed: bytesSent)
+            downloadLabel.text = updateDownloadSpeed(speed: Int(progress*100))
+            gaugeSlider.setCurrentValue(CGFloat(progress*100), animated: true)
         }
         
     }

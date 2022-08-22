@@ -21,6 +21,8 @@
 		F77ED43928A40EE90013F80A /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77ED43728A40EE90013F80A /* TableViewCell.swift */; };
 		F77ED43A28A40EE90013F80A /* TableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F77ED43828A40EE90013F80A /* TableViewCell.xib */; };
 		F7A384DB28A7F46700CA8D3E /* SlideUpAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A384DA28A7F46700CA8D3E /* SlideUpAnimator.swift */; };
+		F7A384DF28A7F61400CA8D3E /* GaugeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A384DE28A7F61400CA8D3E /* GaugeView.swift */; };
+		F7A384E228A7F8BF00CA8D3E /* GaugeSlider in Frameworks */ = {isa = PBXBuildFile; productRef = F7A384E128A7F8BF00CA8D3E /* GaugeSlider */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +42,7 @@
 		F77ED43728A40EE90013F80A /* TableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
 		F77ED43828A40EE90013F80A /* TableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TableViewCell.xib; sourceTree = "<group>"; };
 		F7A384DA28A7F46700CA8D3E /* SlideUpAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SlideUpAnimator.swift; sourceTree = "<group>"; };
+		F7A384DE28A7F61400CA8D3E /* GaugeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaugeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +50,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F7A384E228A7F8BF00CA8D3E /* GaugeSlider in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -98,6 +102,7 @@
 		F74D9ECC288FEEC000106654 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				F7A384DE28A7F61400CA8D3E /* GaugeView.swift */,
 				F7A384DA28A7F46700CA8D3E /* SlideUpAnimator.swift */,
 				F70879A8289022300088B5FE /* AlertManager.swift */,
 				F74D9ECA288FEEBB00106654 /* Reachability.swift */,
@@ -139,6 +144,9 @@
 			dependencies = (
 			);
 			name = "One Speed";
+			packageProductDependencies = (
+				F7A384E128A7F8BF00CA8D3E /* GaugeSlider */,
+			);
 			productName = "One Speed";
 			productReference = EB7946742882DADE0014723D /* One Speed.app */;
 			productType = "com.apple.product-type.application";
@@ -167,6 +175,9 @@
 				Base,
 			);
 			mainGroup = EB79466B2882DADE0014723D;
+			packageReferences = (
+				F7A384E028A7F8BF00CA8D3E /* XCRemoteSwiftPackageReference "GaugeSlider" */,
+			);
 			productRefGroup = EB7946752882DADE0014723D /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -203,6 +214,7 @@
 				F74D9ECB288FEEBB00106654 /* Reachability.swift in Sources */,
 				F74D9ECE2890002200106654 /* HistoryViewController.swift in Sources */,
 				F70ABF442896C0EE00B90BCB /* Test.swift in Sources */,
+				F7A384DF28A7F61400CA8D3E /* GaugeView.swift in Sources */,
 				EB79467A2882DADE0014723D /* SceneDelegate.swift in Sources */,
 				F70ABF422896BF7800B90BCB /* Extensions.swift in Sources */,
 			);
@@ -357,8 +369,10 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -368,7 +382,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -385,8 +399,10 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -396,7 +412,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -422,6 +438,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F7A384E028A7F8BF00CA8D3E /* XCRemoteSwiftPackageReference "GaugeSlider" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/edgar-zigis/GaugeSlider";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F7A384E128A7F8BF00CA8D3E /* GaugeSlider */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F7A384E028A7F8BF00CA8D3E /* XCRemoteSwiftPackageReference "GaugeSlider" */;
+			productName = GaugeSlider;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = EB79466C2882DADE0014723D /* Project object */;
 }
