@@ -6,33 +6,34 @@
 //
 
 import UIKit
-import Foundation
 import GaugeSlider
+import Reachability
 
 class TestViewController: UIViewController {
     
-    @IBOutlet weak var downloadLabel: UILabel!
-    @IBOutlet weak var uploadLabel: UILabel!
+    @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var testButton: UIButton!
     
     @IBAction func testButtonAction(_ sender: Any) {
         testButtonActionFunctionality()
     }
     
+    let reachability = try! Reachability()
     var startTime: CFAbsoluteTime!
     var bytesReceived: Int = 0
     var speedTestCompletionHandler: ((Result<Double, Error>) -> Void)?
-    var counter = 10
+    var counter = 5
     var speedTestResult = Test(download: "", upload: "", date: Date().shortDateTime.description)
     var testData: [Test] = []
     var isTesting = false
     var isDownload = true
     let gaugeSlider = GaugeSliderView()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         loadData()
+        handleInternetConnectionStatus()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -40,16 +41,21 @@ class TestViewController: UIViewController {
         view.slideUpViews(delay: 0.5)
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        reachability.stopNotifier()
+    }
     
     fileprivate func setupUI() {
         title = "Test Your Network!"
         navigationController?.navigationBar.prefersLargeTitles = true
         tabBarController?.tabBar.items![0].title = "Test"
         tabBarController?.tabBar.items![1].title = "History"
-        tabBarController?.tabBar.items![0].image = UIImage(systemName: "network")
-        tabBarController?.tabBar.items![1].image = UIImage(systemName: "clock")
+        tabBarController?.tabBar.items![0].image = UIImage(named: "network")
+        tabBarController?.tabBar.items![1].image = UIImage(named: "history")
         testButton.layer.cornerRadius = 12
         testButton.clipsToBounds = true
+        statusLabel.text = "Test Status"
         setupGuageView()
     }
     
@@ -59,7 +65,6 @@ class TestViewController: UIViewController {
         applyStyle(to: gaugeSlider)
         gaugeSlider.frame = CGRect(x: width * 0.05, y: 150, width: width * 0.9, height: width * 0.9)
         view.addSubview(gaugeSlider)
-        
         
 //        gaugeSlider.onProgressChanged = { [weak self] progress in
 //            print("Progress: \(progress)")
@@ -75,22 +80,22 @@ class TestViewController: UIViewController {
     
     private func applyStyle(to v: GaugeSliderView) {
         v.blankPathColor = UIColor(red: 218/255, green: 218/255, blue: 218/255, alpha: 1)
-        v.fillPathColor = isDownload ? UIColor(red: 47/255, green: 190/255, blue: 169/255, alpha: 1) : UIColor.tintColor
-        v.indicatorColor = isDownload ? UIColor(red: 47/255, green: 190/255, blue: 169/255, alpha: 1) : UIColor.tintColor
+        v.fillPathColor = isDownload ? UIColor(red: 47/255, green: 190/255, blue: 169/255, alpha: 1) : UIColor.blue
+        v.indicatorColor = .blue
         v.unitColor = UIColor(red: 74/255, green: 74/255, blue: 74/255, alpha: 1)
         v.placeholderColor = UIColor(red: 139/255, green: 154/255, blue: 158/255, alpha: 1)
         v.unitIndicatorColor = UIColor(red: 74/255, green: 74/255, blue: 74/255, alpha: 0.2)
         v.customControlColor = UIColor(red: 47/255, green: 190/255, blue: 169/255, alpha: 1) // button color
         v.delegationMode = .immediate(interval: 3)
-        v.isCustomControlActive = true
-        v.unit = " mb"
-        v.placeholder = isDownload ? "Download" : "Upload"
+        v.isCustomControlActive = false
+        v.unit = ""
+        v.placeholder = "MB/S"
         v.customControlButtonVisible = false
         v.slideUpViews(delay: 2)
         v.isUserInteractionEnabled = false
     }
     
-    func updateDownloadSpeed(speed: Int) -> String {
+    func calculateSpeed(speed: Int) -> String {
         let result = (Double(speed) / 1024.0 / 1024.0).rounded(decimalPoint: 2).description + "MB/S"
         return result
     }
@@ -104,7 +109,22 @@ class TestViewController: UIViewController {
         if !isTesting {
             startTesting()
         } else {
-            AlertManager.shared.showAlert(parent: self, title: "Already is testing!", body: "Please wait until test finishes.",buttonTitles: ["Ok"], showCancelButton: false, completion: {_ in})
+            showTestingNotAvailableAlert()
+        }
+    }
+    
+    fileprivate func showTestingNotAvailableAlert() {
+        AlertManager.shared.showAlert(parent: self, title: "Already is testing!", body: "Please wait until test finishes.",buttonTitles: ["Ok"], showCancelButton: false, completion: {_ in})
+    }
+    
+    fileprivate func showInternetConnectionErrorAlert() {
+        DispatchQueue.main.async { [self] in
+            AlertManager.shared.showAlert(parent: self,
+                                          title: "No Connection",
+                                          body: "No internet connection, connect to the internet and try again.",
+                                          buttonTitles: ["Ok"],
+                                          showCancelButton: false) { _ in
+            }
         }
     }
     
@@ -116,16 +136,10 @@ class TestViewController: UIViewController {
                 print(error)
                 speedTestResult.download = "Error"
                 startUpload()
-                DispatchQueue.main.async {[self] in
-//                    downloadLabel.text = "Error!"
-                }
             case .success(let megabytesPerSecond):
                 print(megabytesPerSecond)
                 let downloadResult = megabytesPerSecond.rounded(decimalPoint: 2)
                 speedTestResult.download = downloadResult.description
-                DispatchQueue.main.async {[self] in
-//                    downloadLabel.text = downloadResult.description + "MB/S"
-                }
                 startUpload()
             }
         }
@@ -172,11 +186,14 @@ class TestViewController: UIViewController {
                     print("failed upload")
                     isTesting = false
                     DispatchQueue.main.async {[self] in
-//                        uploadLabel.text = "Error!"
                         speedTestResult.upload = "Error!"
+                        statusLabel.text = "Test Status"
                     }
                 } else {
                     print("success upload")
+                    DispatchQueue.main.async {[self] in
+                        statusLabel.text = "Test Status"
+                    }
                     isTesting = false
                 }
             }
@@ -185,6 +202,17 @@ class TestViewController: UIViewController {
                 speedTestResult.upload = "Error!"
                 DispatchQueue.main.async {[self] in
                     gaugeSlider.setCurrentValue(0, animated: true)
+                    statusLabel.text = "Test Status"
+                    AlertManager.shared.showAlert(parent: self,
+                                                  title: "Done!",
+                                                  body: "Test done successfully", buttonTitles: ["Not now", "Show result"],
+                                                  showCancelButton: false) { buttonIndex in
+                        if buttonIndex == 1 {
+                            DispatchQueue.main.async {
+                                self.tabBarController?.selectedIndex = 1
+                            }
+                        }
+                    }
                 }
                 isTesting = false
                 DispatchQueue.main.async {[self] in
@@ -193,6 +221,27 @@ class TestViewController: UIViewController {
             }
         }
         dataTask.resume()
+    }
+    
+    func handleInternetConnectionStatus() {
+        reachability.whenReachable = { [self] reachability in
+            if reachability.connection == .wifi || reachability.connection == .cellular {
+                print("Connected to the internet")
+                testButton.isEnabled = true
+            }
+        }
+        reachability.whenUnreachable = { _ in
+            print("Not Connected")
+            DispatchQueue.main.async {[self] in
+                showInternetConnectionErrorAlert()
+                testButton.isEnabled = false
+            }
+        }
+        do {
+            try reachability.startNotifier()
+        } catch {
+            print("Unable to start notifier")
+        }
     }
 }
 
@@ -203,7 +252,7 @@ extension TestViewController: URLSessionDataDelegate, URLSessionDelegate {
         bytesReceived += data.count
         DispatchQueue.main.async { [self] in
             let value = (Double(data.count) / 1024.0 / 1024.0).rounded(decimalPoint: 2)
-            downloadLabel.text = updateDownloadSpeed(speed: data.count)
+            statusLabel.text = "Testing Download Speed..." //calculateSpeed(speed: data.count)
             gaugeSlider.setCurrentValue(value*100, animated: true)
         }
         
@@ -228,7 +277,7 @@ extension TestViewController: URLSessionTaskDelegate {
         let progress:Float = Float(totalBytesSent) / Float(totalBytesExpectedToSend)
         print("progress", progress)
         DispatchQueue.main.async {[self] in
-            downloadLabel.text = updateDownloadSpeed(speed: Int(progress*100))
+            statusLabel.text = "Testing Upload Speed..." //calculateSpeed(speed: Int(progress*100))
             gaugeSlider.setCurrentValue(CGFloat(progress*100), animated: true)
         }
         

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 extension Double {
     
@@ -53,4 +54,23 @@ extension Date {
     var longDateTime: String { localizedDescription(date: .long, time: .long) }
     var mediumDateTime: String { localizedDescription(date: .medium, time: .medium) }
     var shortDateTime: String { localizedDescription(date: .short, time: .short) }
+}
+
+extension UITableView {
+    
+    func updateContentStatus() {
+        if rowHeight == 0 {
+            let label = UILabel(frame: CGRect(x: 0, y: 0, width: self.bounds.size.width, height: self.bounds.size.height))
+            label.text = "There's nothing to show ;("
+            label.textColor = .black
+            label.numberOfLines = 0
+            label.textAlignment = .center
+            label.sizeToFit()
+            backgroundView = label
+            separatorStyle = .none
+        } else {
+            backgroundView = nil
+            separatorStyle = .singleLine
+        }
+    }
 }

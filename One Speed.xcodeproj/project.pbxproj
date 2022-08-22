@@ -16,6 +16,7 @@
 		F70879A9289022300088B5FE /* AlertManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70879A8289022300088B5FE /* AlertManager.swift */; };
 		F70ABF422896BF7800B90BCB /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70ABF412896BF7800B90BCB /* Extensions.swift */; };
 		F70ABF442896C0EE00B90BCB /* Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70ABF432896C0EE00B90BCB /* Test.swift */; };
+		F7287EDE28B390F10078A151 /* Reachability in Frameworks */ = {isa = PBXBuildFile; productRef = F7287EDD28B390F10078A151 /* Reachability */; };
 		F74D9ECB288FEEBB00106654 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74D9ECA288FEEBB00106654 /* Reachability.swift */; };
 		F74D9ECE2890002200106654 /* HistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74D9ECD2890002200106654 /* HistoryViewController.swift */; };
 		F77ED43928A40EE90013F80A /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77ED43728A40EE90013F80A /* TableViewCell.swift */; };
@@ -51,6 +52,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7A384E228A7F8BF00CA8D3E /* GaugeSlider in Frameworks */,
+				F7287EDE28B390F10078A151 /* Reachability in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -146,6 +148,7 @@
 			name = "One Speed";
 			packageProductDependencies = (
 				F7A384E128A7F8BF00CA8D3E /* GaugeSlider */,
+				F7287EDD28B390F10078A151 /* Reachability */,
 			);
 			productName = "One Speed";
 			productReference = EB7946742882DADE0014723D /* One Speed.app */;
@@ -177,6 +180,7 @@
 			mainGroup = EB79466B2882DADE0014723D;
 			packageReferences = (
 				F7A384E028A7F8BF00CA8D3E /* XCRemoteSwiftPackageReference "GaugeSlider" */,
+				F7287EDC28B390F10078A151 /* XCRemoteSwiftPackageReference "Reachability" */,
 			);
 			productRefGroup = EB7946752882DADE0014723D /* Products */;
 			projectDirPath = "";
@@ -440,6 +444,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		F7287EDC28B390F10078A151 /* XCRemoteSwiftPackageReference "Reachability" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ashleymills/Reachability.swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		F7A384E028A7F8BF00CA8D3E /* XCRemoteSwiftPackageReference "GaugeSlider" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/edgar-zigis/GaugeSlider";
@@ -451,6 +463,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		F7287EDD28B390F10078A151 /* Reachability */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F7287EDC28B390F10078A151 /* XCRemoteSwiftPackageReference "Reachability" */;
+			productName = Reachability;
+		};
 		F7A384E128A7F8BF00CA8D3E /* GaugeSlider */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F7A384E028A7F8BF00CA8D3E /* XCRemoteSwiftPackageReference "GaugeSlider" */;

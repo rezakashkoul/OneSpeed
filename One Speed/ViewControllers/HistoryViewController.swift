@@ -24,6 +24,7 @@ class HistoryViewController: UIViewController {
         
         setupTableView()
         setupUI()
+        tableView.updateContentStatus()
     }
     
     override func viewWillAppear(_ animated: Bool) {
