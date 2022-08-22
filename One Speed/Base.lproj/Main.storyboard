@@ -39,14 +39,28 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="3iH-Ms-LL3">
+                                <rect key="frame" x="100" y="725" width="214" height="51"/>
+                                <segments>
+                                    <segment title="First"/>
+                                    <segment title="Second"/>
+                                </segments>
+                                <connections>
+                                    <action selector="testQualitySegment:" destination="BYZ-38-t0r" eventType="valueChanged" id="IVo-VL-GhQ"/>
+                                </connections>
+                            </segmentedControl>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="3iH-Ms-LL3" firstAttribute="height" secondItem="vwL-YH-hzh" secondAttribute="height" id="3Pl-cw-R6W"/>
                             <constraint firstItem="vwL-YH-hzh" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="100" id="BES-jn-ook"/>
+                            <constraint firstItem="3iH-Ms-LL3" firstAttribute="centerX" secondItem="vwL-YH-hzh" secondAttribute="centerX" id="QOx-4V-WaF"/>
                             <constraint firstItem="23s-Wc-lRK" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="TUa-Fy-8NX"/>
                             <constraint firstItem="vwL-YH-hzh" firstAttribute="top" secondItem="23s-Wc-lRK" secondAttribute="bottom" constant="103" id="e1n-ay-kdE"/>
+                            <constraint firstItem="3iH-Ms-LL3" firstAttribute="top" secondItem="vwL-YH-hzh" secondAttribute="bottom" constant="12" id="lNb-q7-upv"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="vwL-YH-hzh" secondAttribute="trailing" constant="100" id="n1e-Z0-U8k"/>
+                            <constraint firstItem="3iH-Ms-LL3" firstAttribute="width" secondItem="vwL-YH-hzh" secondAttribute="width" id="s46-t8-leG"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="vwL-YH-hzh" secondAttribute="bottom" constant="100" id="xFF-qc-rzT"/>
                         </constraints>
                     </view>
@@ -54,6 +68,7 @@
                     <connections>
                         <outlet property="statusLabel" destination="23s-Wc-lRK" id="LCG-He-qUO"/>
                         <outlet property="testButton" destination="vwL-YH-hzh" id="wrZ-sE-Z7U"/>
+                        <outlet property="testQualitySegment" destination="3iH-Ms-LL3" id="DdX-5b-geY"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

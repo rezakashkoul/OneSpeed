@@ -13,6 +13,12 @@ class TestViewController: UIViewController {
     
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var testButton: UIButton!
+    @IBOutlet weak var testQualitySegment: UISegmentedControl!
+    
+    @IBAction func testQualitySegment(_ sender: Any) {
+        setTestTime()
+        print("testTime is", testTime)
+    }
     
     @IBAction func testButtonAction(_ sender: Any) {
         testButtonActionFunctionality()
@@ -22,7 +28,7 @@ class TestViewController: UIViewController {
     var startTime: CFAbsoluteTime!
     var bytesReceived: Int = 0
     var speedTestCompletionHandler: ((Result<Double, Error>) -> Void)?
-    var counter = 5
+    var testTime = 5
     var speedTestResult = Test(download: "", upload: "", date: Date().shortDateTime.description)
     var testData: [Test] = []
     var isTesting = false
@@ -53,56 +59,45 @@ class TestViewController: UIViewController {
         tabBarController?.tabBar.items![1].title = "History"
         tabBarController?.tabBar.items![0].image = UIImage(named: "network")
         tabBarController?.tabBar.items![1].image = UIImage(named: "history")
+        testQualitySegment.selectedSegmentIndex = 0
+        testQualitySegment.setTitle("Fast", forSegmentAt: 0)
+        testQualitySegment.setTitle("Relible", forSegmentAt: 1)
         testButton.layer.cornerRadius = 12
         testButton.clipsToBounds = true
         statusLabel.text = "Test Status"
         setupGuageView()
+        setTestTime()
+        print("testTime is", testTime)
     }
     
     fileprivate func setupGuageView() {
         let width = UIScreen.main.bounds.width
         
-        applyStyle(to: gaugeSlider)
+        guageViewConfiguration(view: gaugeSlider)
         gaugeSlider.frame = CGRect(x: width * 0.05, y: 150, width: width * 0.9, height: width * 0.9)
         view.addSubview(gaugeSlider)
-        
-//        gaugeSlider.onProgressChanged = { [weak self] progress in
-//            print("Progress: \(progress)")
-//
-//        }
-        
-//        gaugeSlider.onButtonAction = { [weak self] in
-//            print("Action executed")
-//        }
-        
         view.backgroundColor = .white
     }
     
-    private func applyStyle(to v: GaugeSliderView) {
-        v.blankPathColor = UIColor(red: 218/255, green: 218/255, blue: 218/255, alpha: 1)
-        v.fillPathColor = isDownload ? UIColor(red: 47/255, green: 190/255, blue: 169/255, alpha: 1) : UIColor.blue
-        v.indicatorColor = .blue
-        v.unitColor = UIColor(red: 74/255, green: 74/255, blue: 74/255, alpha: 1)
-        v.placeholderColor = UIColor(red: 139/255, green: 154/255, blue: 158/255, alpha: 1)
-        v.unitIndicatorColor = UIColor(red: 74/255, green: 74/255, blue: 74/255, alpha: 0.2)
-        v.customControlColor = UIColor(red: 47/255, green: 190/255, blue: 169/255, alpha: 1) // button color
-        v.delegationMode = .immediate(interval: 3)
-        v.isCustomControlActive = false
-        v.unit = ""
-        v.placeholder = "MB/S"
-        v.customControlButtonVisible = false
-        v.slideUpViews(delay: 2)
-        v.isUserInteractionEnabled = false
+    private func guageViewConfiguration(view gauge: GaugeSliderView) {
+        gauge.blankPathColor = UIColor(red: 218/255, green: 218/255, blue: 218/255, alpha: 1)
+        gauge.fillPathColor = isDownload ? UIColor(red: 47/255, green: 190/255, blue: 169/255, alpha: 1) : UIColor.blue
+        gauge.indicatorColor = .blue
+        gauge.unitColor = UIColor(red: 74/255, green: 74/255, blue: 74/255, alpha: 1)
+        gauge.placeholderColor = UIColor(red: 139/255, green: 154/255, blue: 158/255, alpha: 1)
+        gauge.unitIndicatorColor = UIColor(red: 74/255, green: 74/255, blue: 74/255, alpha: 0.2)
+        gauge.customControlColor = UIColor(red: 47/255, green: 190/255, blue: 169/255, alpha: 1) // button color
+        gauge.delegationMode = .immediate(interval: 3)
+        gauge.isCustomControlActive = false
+        gauge.unit = ""
+        gauge.placeholder = "MB/S"
+        gauge.customControlButtonVisible = false
+        gauge.slideUpViews(delay: 2)
+        gauge.isUserInteractionEnabled = false
     }
     
-    func calculateSpeed(speed: Int) -> String {
-        let result = (Double(speed) / 1024.0 / 1024.0).rounded(decimalPoint: 2).description + "MB/S"
-        return result
-    }
-    
-    func updateUploadSpeed(speed: Int64) -> String {
-        let uploadSpeed = (Double(speed) / 1024.0 / 1024.0).rounded(decimalPoint: 2).description + "MB/S"
-        return uploadSpeed
+    fileprivate func setTestTime() {
+        testTime = testQualitySegment.selectedSegmentIndex == 0 ? 15 : 45
     }
     
     func testButtonActionFunctionality() {
@@ -128,9 +123,35 @@ class TestViewController: UIViewController {
         }
     }
     
+    func handleInternetConnectionStatus() {
+        reachability.whenReachable = { [self] reachability in
+            if reachability.connection == .wifi || reachability.connection == .cellular {
+                print("Connected to the internet")
+                testButton.isEnabled = true
+            }
+        }
+        reachability.whenUnreachable = { _ in
+            print("Not Connected")
+            DispatchQueue.main.async {[self] in
+                showInternetConnectionErrorAlert()
+                testButton.isEnabled = false
+            }
+        }
+        do {
+            try reachability.startNotifier()
+        } catch {
+            print("Unable to start notifier")
+        }
+    }
+    
+    func calculateSpeed(speed: Int) -> String {
+        let result = (Double(speed) / 1024.0 / 1024.0).rounded(decimalPoint: 2).description + "MB/S"
+        return result
+    }
+    
     func startTesting() {
         isTesting = true
-        startDownload(timeout: TimeInterval(counter)) { [self] result in
+        startDownload(timeout: TimeInterval(testTime)) { [self] result in
             switch result {
             case .failure(let error):
                 print(error)
@@ -168,7 +189,7 @@ class TestViewController: UIViewController {
                 allData["file \(i)"] = file
             }
         }
-        upload(timeout: TimeInterval(counter), data: allData.compactMap({$0.value}).reduce(Data(), +))
+        upload(timeout: TimeInterval(testTime), data: allData.compactMap({$0.value}).reduce(Data(), +))
     }
     
     func upload(timeout: TimeInterval, data: Data) {
@@ -223,26 +244,6 @@ class TestViewController: UIViewController {
         dataTask.resume()
     }
     
-    func handleInternetConnectionStatus() {
-        reachability.whenReachable = { [self] reachability in
-            if reachability.connection == .wifi || reachability.connection == .cellular {
-                print("Connected to the internet")
-                testButton.isEnabled = true
-            }
-        }
-        reachability.whenUnreachable = { _ in
-            print("Not Connected")
-            DispatchQueue.main.async {[self] in
-                showInternetConnectionErrorAlert()
-                testButton.isEnabled = false
-            }
-        }
-        do {
-            try reachability.startNotifier()
-        } catch {
-            print("Unable to start notifier")
-        }
-    }
 }
 
 //MARK: Download URLSessionDataDelegate , URLSessionDelegate:
