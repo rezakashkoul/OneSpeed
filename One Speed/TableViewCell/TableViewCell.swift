@@ -14,7 +14,7 @@ class TableViewCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-
+        selectionStyle = .none
     }
     
     func setupCell(download: String, upload: String) {

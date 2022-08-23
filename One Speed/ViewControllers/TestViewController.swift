@@ -11,9 +11,11 @@ import Reachability
 
 class TestViewController: UIViewController {
     
+    @IBOutlet weak var gaugeSlider: GaugeSliderView!
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var testButton: UIButton!
     @IBOutlet weak var testQualitySegment: UISegmentedControl!
+    
     
     @IBAction func testQualitySegment(_ sender: Any) {
         setTestTime()
@@ -28,10 +30,15 @@ class TestViewController: UIViewController {
     var startTime: CFAbsoluteTime!
     var bytesReceived: Int = 0
     var speedTestCompletionHandler: ((Result<Double, Error>) -> Void)?
-    var testTime = 5
+    var testTime = 15
     var isTesting = false
-    var isDownload = true
-    let gaugeSlider = GaugeSliderView()
+    var isDownload = true {
+        didSet {
+            DispatchQueue.main.async {[self] in
+                updateUIByTestKind()
+            }
+        }
+    }
     var valueList: [Double] = []
     var testResult = Test(download: "", upload: "", date: Date().shortDate.description) {
         didSet {
@@ -66,12 +73,14 @@ class TestViewController: UIViewController {
         testQualitySegment.setTitle("Reliable", forSegmentAt: 1)
         testButton.layer.cornerRadius = 12
         testButton.clipsToBounds = true
-        setupGuageView()
+        testQualitySegment.layer.cornerRadius = 12
+        testQualitySegment.clipsToBounds = true
+        guageViewConfiguration(view: gaugeSlider)
         setTestTime()
-        updateUI()
+        updateUIByTestStatus()
     }
     
-    func updateUI() {
+    func updateUIByTestStatus() {
         if isTesting {
             testButton.isEnabled = false
             testQualitySegment.isEnabled = false
@@ -83,28 +92,29 @@ class TestViewController: UIViewController {
         }
     }
     
-    fileprivate func setupGuageView() {
-        let width = UIScreen.main.bounds.width
-        guageViewConfiguration(view: gaugeSlider)
-        gaugeSlider.frame = CGRect(x: width * 0.05, y: 150, width: width * 0.9, height: width * 0.9)
-        view.addSubview(gaugeSlider)
-        view.backgroundColor = .white
+    func updateUIByTestKind() {
+        if isDownload {
+            gaugeSlider.fillPathColor = .green
+        } else {
+            gaugeSlider.fillPathColor = .blue
+        }
     }
     
     private func guageViewConfiguration(view gauge: GaugeSliderView) {
-        gauge.blankPathColor = UIColor(red: 218/255, green: 218/255, blue: 218/255, alpha: 1)
-        gauge.fillPathColor = isDownload ? UIColor(red: 47/255, green: 190/255, blue: 169/255, alpha: 1) : UIColor.blue
+        gauge.blankPathColor = .lightGray
+        gauge.fillPathColor = isDownload ? .green : .blue
         gauge.indicatorColor = .blue
-        gauge.unitColor = UIColor(red: 74/255, green: 74/255, blue: 74/255, alpha: 1)
-        gauge.placeholderColor = UIColor(red: 139/255, green: 154/255, blue: 158/255, alpha: 1)
-        gauge.unitIndicatorColor = UIColor(red: 74/255, green: 74/255, blue: 74/255, alpha: 0.2)
-        gauge.customControlColor = UIColor(red: 47/255, green: 190/255, blue: 169/255, alpha: 1)
+        gauge.unitColor = .black
+        gauge.placeholderColor = .black
+        gauge.unitIndicatorColor = .lightGray
+        gauge.customControlColor = .lightGray
         gauge.delegationMode = .immediate(interval: 3)
-        gauge.isCustomControlActive = false
         gauge.unit = ""
         gauge.placeholder = "MB/S"
-        gauge.customControlButtonVisible = false
+        gauge.customControlButtonTitle = "Connected"
         gauge.slideUpViews(delay: 0.5)
+        gauge.minValue = 0
+        gauge.maxValue = 100
         gauge.isUserInteractionEnabled = false
     }
     
@@ -121,7 +131,7 @@ class TestViewController: UIViewController {
             }
         }
         DispatchQueue.main.async {[self] in
-            updateUI()
+            updateUIByTestStatus()
         }
     }
     
@@ -145,13 +155,18 @@ class TestViewController: UIViewController {
             if reachability.connection == .wifi || reachability.connection == .cellular {
                 print("Connected to the internet")
                 testButton.isEnabled = true
+                DispatchQueue.main.async {[self] in
+                    gaugeSlider.customControlButtonTitle = "Connected"
+                    testButton.isEnabled = true
+                }
             }
         }
         reachability.whenUnreachable = { _ in
             print("Not Connected")
             DispatchQueue.main.async {[self] in
-                showInternetConnectionErrorAlert()
+                gaugeSlider.customControlButtonTitle = "Not Connected"
                 testButton.isEnabled = false
+                showInternetConnectionErrorAlert()
             }
         }
         do {
@@ -234,12 +249,12 @@ class TestViewController: UIViewController {
                     isTesting = false
                     DispatchQueue.main.async {[self] in
                         testResult.upload = "Error!"
-                        updateUI()
+                        updateUIByTestStatus()
                     }
                 } else {
                     print("success upload")
                     DispatchQueue.main.async {[self] in
-                        updateUI()
+                        updateUIByTestStatus()
                     }
                     isTesting = false
                     print(calculateAverageSpeed(list: valueList), "uploadspeed")
@@ -250,11 +265,11 @@ class TestViewController: UIViewController {
                 print("upload error",error.localizedDescription)
                 testResult.upload = "Error!"
                 DispatchQueue.main.async {[self] in
-                    updateUI()
+                    updateUIByTestStatus()
                     AlertManager.shared.showAlert(parent: self,
                                                   title: "Done!",
                                                   body: "Test done successfully", buttonTitles: ["Not now", "Show result"],
-                                                  showCancelButton: false) { buttonIndex in
+                                                  showCancelButton: false) { [self] buttonIndex in
                         if buttonIndex == 1 {
                             DispatchQueue.main.async {
                                 self.tabBarController?.selectedIndex = 1
@@ -266,7 +281,7 @@ class TestViewController: UIViewController {
                 print(calculateAverageSpeed(list: valueList), "uploadspeed")
                 testResult.upload = calculateAverageSpeed(list: valueList).rounded(decimalPoint: 1).description
                 DispatchQueue.main.async {[self] in
-                    updateUI()
+                    updateUIByTestStatus()
                 }
             }
         }

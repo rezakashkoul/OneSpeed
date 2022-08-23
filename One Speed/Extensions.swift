@@ -61,7 +61,7 @@ extension UITableView {
     func updateContentStatus() {
         if visibleCells.count == 0 {
             let label = UILabel(frame: CGRect(x: 0, y: 0, width: self.bounds.size.width, height: self.bounds.size.height))
-            label.text = "There's nothing to show ;("
+            label.text = "There's nothing to show :("
             label.textColor = .black
             label.numberOfLines = 0
             label.textAlignment = .center
