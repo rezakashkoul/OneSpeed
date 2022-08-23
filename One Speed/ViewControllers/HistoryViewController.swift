@@ -11,36 +11,43 @@ class HistoryViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     
-    var testData: [Test] = [] {
-        didSet {
-            DispatchQueue.main.async {[self] in
-                tableView.reloadData()
-            }
-        }
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupTableView()
         setupUI()
+        setupTableView()
         tableView.updateContentStatus()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        loadData()
+        testData = loadData()
+        DispatchQueue.main.async {[self] in
+            tableView.reloadData()
+            view.slideLeftViews(delay: 0.5)
+        }
     }
     
     func setupUI() {
-        title = "SPD History"
+        title = "Test History"
         navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Clean", style: .done, target: self, action: #selector(cleanListAction))
     }
-
+    
     func setupTableView() {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(UINib(nibName: "TableViewCell", bundle: nil), forCellReuseIdentifier: "TableViewCell")
+        tableView.updateContentStatus()
+    }
+    
+    @objc private func cleanListAction() {
+        testData = []
+        saveData(item: testData)
+        DispatchQueue.main.async {[self] in
+            tableView.reloadData()
+            tableView.updateContentStatus()
+        }
     }
 }
 
@@ -59,23 +66,7 @@ extension HistoryViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Test Serial \(section+1)." + " on " + testData[section].date
+        return testData.isEmpty ? nil : testData[section].date
     }
     
 }
-
-//MARK: Load Data:
-extension HistoryViewController {
-        
-    func loadData() {
-        if let data = UserDefaults.standard.data(forKey: "TestData") {
-            do {
-                let decoder = JSONDecoder()
-                testData = try decoder.decode([Test].self, from: data)
-            } catch {
-                print("Unable to Decode data (\(error))")
-            }
-        }
-    }
-}
-

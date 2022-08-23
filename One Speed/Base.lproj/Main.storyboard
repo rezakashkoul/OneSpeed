@@ -19,7 +19,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vwL-YH-hzh">
-                                <rect key="frame" x="100" y="663" width="214" height="50"/>
+                                <rect key="frame" x="100" y="703" width="214" height="50"/>
                                 <color key="backgroundColor" name="AccentColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="8qh-qi-spL"/>
@@ -34,13 +34,13 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Test Status" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="23s-Wc-lRK">
-                                <rect key="frame" x="147" y="532" width="120.5" height="28"/>
+                                <rect key="frame" x="147" y="534" width="120.5" height="28"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="23"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="3iH-Ms-LL3">
-                                <rect key="frame" x="100" y="725" width="214" height="51"/>
+                                <rect key="frame" x="100" y="632" width="214" height="52"/>
                                 <segments>
                                     <segment title="First"/>
                                     <segment title="Second"/>
@@ -53,15 +53,15 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="3iH-Ms-LL3" firstAttribute="height" secondItem="vwL-YH-hzh" secondAttribute="height" id="3Pl-cw-R6W"/>
+                            <constraint firstItem="3iH-Ms-LL3" firstAttribute="top" secondItem="23s-Wc-lRK" secondAttribute="bottom" constant="70" id="1Az-Xg-bOP"/>
+                            <constraint firstItem="3iH-Ms-LL3" firstAttribute="height" secondItem="vwL-YH-hzh" secondAttribute="height" constant="1" id="3Pl-cw-R6W"/>
                             <constraint firstItem="vwL-YH-hzh" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="100" id="BES-jn-ook"/>
                             <constraint firstItem="3iH-Ms-LL3" firstAttribute="centerX" secondItem="vwL-YH-hzh" secondAttribute="centerX" id="QOx-4V-WaF"/>
                             <constraint firstItem="23s-Wc-lRK" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="TUa-Fy-8NX"/>
-                            <constraint firstItem="vwL-YH-hzh" firstAttribute="top" secondItem="23s-Wc-lRK" secondAttribute="bottom" constant="103" id="e1n-ay-kdE"/>
-                            <constraint firstItem="3iH-Ms-LL3" firstAttribute="top" secondItem="vwL-YH-hzh" secondAttribute="bottom" constant="12" id="lNb-q7-upv"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="vwL-YH-hzh" secondAttribute="trailing" constant="100" id="n1e-Z0-U8k"/>
                             <constraint firstItem="3iH-Ms-LL3" firstAttribute="width" secondItem="vwL-YH-hzh" secondAttribute="width" id="s46-t8-leG"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="vwL-YH-hzh" secondAttribute="bottom" constant="100" id="xFF-qc-rzT"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="vwL-YH-hzh" secondAttribute="bottom" constant="60" id="uRJ-Dn-nXc"/>
+                            <constraint firstItem="vwL-YH-hzh" firstAttribute="top" secondItem="3iH-Ms-LL3" secondAttribute="bottom" constant="20" id="z3w-EB-HTV"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="jxt-xH-Iwe"/>

@@ -29,21 +29,23 @@ class TestViewController: UIViewController {
     var bytesReceived: Int = 0
     var speedTestCompletionHandler: ((Result<Double, Error>) -> Void)?
     var testTime = 5
-    var speedTestResult = Test(download: "", upload: "", date: Date().shortDateTime.description)
-    var testData: [Test] = []
     var isTesting = false
     var isDownload = true
     let gaugeSlider = GaugeSliderView()
+    var valueList: [Double] = []
+    var testResult = Test(download: "", upload: "", date: Date().shortDate.description) {
+        didSet {
+            if !isTesting {
+                testData.append(testResult)
+            }
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        loadData()
+        testData = loadData()
         handleInternetConnectionStatus()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
         view.slideUpViews(delay: 0.5)
     }
     
@@ -53,7 +55,7 @@ class TestViewController: UIViewController {
     }
     
     fileprivate func setupUI() {
-        title = "Test Your Network!"
+        title = "Test!"
         navigationController?.navigationBar.prefersLargeTitles = true
         tabBarController?.tabBar.items![0].title = "Test"
         tabBarController?.tabBar.items![1].title = "History"
@@ -64,10 +66,21 @@ class TestViewController: UIViewController {
         testQualitySegment.setTitle("Relible", forSegmentAt: 1)
         testButton.layer.cornerRadius = 12
         testButton.clipsToBounds = true
-        statusLabel.text = "Test Status"
         setupGuageView()
         setTestTime()
-        print("testTime is", testTime)
+        updateUI()
+    }
+    
+    func updateUI() {
+        if isTesting {
+            testButton.isEnabled = false
+            testQualitySegment.isEnabled = false
+        } else {
+            testButton.isEnabled = true
+            testQualitySegment.isEnabled = true
+            statusLabel.text = "Test Status"
+            gaugeSlider.setCurrentValue(0, animated: true)
+        }
     }
     
     fileprivate func setupGuageView() {
@@ -86,13 +99,13 @@ class TestViewController: UIViewController {
         gauge.unitColor = UIColor(red: 74/255, green: 74/255, blue: 74/255, alpha: 1)
         gauge.placeholderColor = UIColor(red: 139/255, green: 154/255, blue: 158/255, alpha: 1)
         gauge.unitIndicatorColor = UIColor(red: 74/255, green: 74/255, blue: 74/255, alpha: 0.2)
-        gauge.customControlColor = UIColor(red: 47/255, green: 190/255, blue: 169/255, alpha: 1) // button color
+        gauge.customControlColor = UIColor(red: 47/255, green: 190/255, blue: 169/255, alpha: 1)
         gauge.delegationMode = .immediate(interval: 3)
         gauge.isCustomControlActive = false
         gauge.unit = ""
         gauge.placeholder = "MB/S"
         gauge.customControlButtonVisible = false
-        gauge.slideUpViews(delay: 2)
+        gauge.slideUpViews(delay: 0.5)
         gauge.isUserInteractionEnabled = false
     }
     
@@ -104,7 +117,12 @@ class TestViewController: UIViewController {
         if !isTesting {
             startTesting()
         } else {
-            showTestingNotAvailableAlert()
+            DispatchQueue.main.async {[self] in
+                showTestingNotAvailableAlert()
+            }
+        }
+        DispatchQueue.main.async {[self] in
+            updateUI()
         }
     }
     
@@ -144,9 +162,17 @@ class TestViewController: UIViewController {
         }
     }
     
-    func calculateSpeed(speed: Int) -> String {
-        let result = (Double(speed) / 1024.0 / 1024.0).rounded(decimalPoint: 2).description + "MB/S"
+    func calculateMomentarySpeed(value: Int) -> String {
+        let result = (Double(value) / 1024.0 / 1024.0).rounded(decimalPoint: 2).description + "MB/S"
         return result
+    }
+    
+    func calculateAverageSpeed(list value: [Double])->Double {
+        let sum = valueList.reduce(0, +)
+        print("valueList", valueList)
+        print("valueList.count", valueList.count)
+        print("result", sum/Double(valueList.count))
+        return sum*100/Double(valueList.count)//TODO: fix this
     }
     
     func startTesting() {
@@ -155,12 +181,13 @@ class TestViewController: UIViewController {
             switch result {
             case .failure(let error):
                 print(error)
-                speedTestResult.download = "Error"
+                testResult.download = "Error"
                 startUpload()
             case .success(let megabytesPerSecond):
                 print(megabytesPerSecond)
                 let downloadResult = megabytesPerSecond.rounded(decimalPoint: 2)
-                speedTestResult.download = downloadResult.description
+                testResult.download = downloadResult.description
+                testResult.download = calculateAverageSpeed(list: valueList).description
                 startUpload()
             }
         }
@@ -169,6 +196,7 @@ class TestViewController: UIViewController {
     func startDownload(timeout: TimeInterval, completionHandler: @escaping (Result<Double, Error>) -> Void) {
         print("Starting download")
         isDownload = true
+        valueList = []
         let url = URL(string: "https://updates.cdn-apple.com/2022SummerFCS/fullrestores/012-41728/C0769E31-5F11-4F6F-AF48-58175F955F51/iPhone14,5_15.6_19G71_Restore.ipsw")!
         startTime = CFAbsoluteTimeGetCurrent()
         bytesReceived = 0
@@ -182,6 +210,7 @@ class TestViewController: UIViewController {
     
     func startUpload() {
         isDownload = false
+        valueList = []
         print("Starting upload")
         var allData:[String: Data] = [:]
         if let file = (0...1000).compactMap({_ in UUID().uuidString}).description.data(using: .utf8) {
@@ -207,23 +236,24 @@ class TestViewController: UIViewController {
                     print("failed upload")
                     isTesting = false
                     DispatchQueue.main.async {[self] in
-                        speedTestResult.upload = "Error!"
-                        statusLabel.text = "Test Status"
+                        testResult.upload = "Error!"
+                        updateUI()
                     }
                 } else {
                     print("success upload")
                     DispatchQueue.main.async {[self] in
-                        statusLabel.text = "Test Status"
+                        updateUI()
                     }
                     isTesting = false
+                    print(calculateAverageSpeed(list: valueList), "uploadspeed")
+                    testResult.upload = calculateAverageSpeed(list: valueList).description
                 }
             }
             if let error = error {
                 print("upload error",error.localizedDescription)
-                speedTestResult.upload = "Error!"
+                testResult.upload = "Error!"
                 DispatchQueue.main.async {[self] in
-                    gaugeSlider.setCurrentValue(0, animated: true)
-                    statusLabel.text = "Test Status"
+                    updateUI()
                     AlertManager.shared.showAlert(parent: self,
                                                   title: "Done!",
                                                   body: "Test done successfully", buttonTitles: ["Not now", "Show result"],
@@ -236,8 +266,10 @@ class TestViewController: UIViewController {
                     }
                 }
                 isTesting = false
+                print(calculateAverageSpeed(list: valueList), "uploadspeed")
+                testResult.upload = calculateAverageSpeed(list: valueList).description
                 DispatchQueue.main.async {[self] in
-                    testButton.isEnabled = true
+                    updateUI()
                 }
             }
         }
@@ -248,15 +280,17 @@ class TestViewController: UIViewController {
 
 //MARK: Download URLSessionDataDelegate , URLSessionDelegate:
 extension TestViewController: URLSessionDataDelegate, URLSessionDelegate {
-    
+
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         bytesReceived += data.count
         DispatchQueue.main.async { [self] in
             let value = (Double(data.count) / 1024.0 / 1024.0).rounded(decimalPoint: 2)
             statusLabel.text = "Testing Download Speed..." //calculateSpeed(speed: data.count)
             gaugeSlider.setCurrentValue(value*100, animated: true)
+            
+            valueList.append(value)
+            print("valueList", valueList)
         }
-        
     }
     
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
@@ -279,33 +313,10 @@ extension TestViewController: URLSessionTaskDelegate {
         print("progress", progress)
         DispatchQueue.main.async {[self] in
             statusLabel.text = "Testing Upload Speed..." //calculateSpeed(speed: Int(progress*100))
-            gaugeSlider.setCurrentValue(CGFloat(progress*100), animated: true)
-        }
-        
-    }
-}
-
-//MARK: Save and load Data:
-extension TestViewController {
-    
-    func saveData() {
-        do {
-            let encoder = JSONEncoder()
-            let data = try encoder.encode(testData)
-            UserDefaults.standard.set(data, forKey: "TestData")
-        } catch {
-            print("Unable to Encode data (\(error))")
-        }
-    }
-    
-    func loadData() {
-        if let data = UserDefaults.standard.data(forKey: "TestData") {
-            do {
-                let decoder = JSONDecoder()
-                testData = try decoder.decode([Test].self, from: data)
-            } catch {
-                print("Unable to Decode data (\(error))")
-            }
+            let value = progress*100
+            gaugeSlider.setCurrentValue(CGFloat(value), animated: true)
+            valueList.append(Double(value))
+            print("valueList", valueList)
         }
     }
 }
