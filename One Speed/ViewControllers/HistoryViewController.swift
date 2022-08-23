@@ -16,7 +16,6 @@ class HistoryViewController: UIViewController {
         
         setupUI()
         setupTableView()
-        tableView.updateContentStatus()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -24,6 +23,8 @@ class HistoryViewController: UIViewController {
         testData = loadData()
         DispatchQueue.main.async {[self] in
             tableView.reloadData()
+            tableView.updateContentStatus()
+            updateCleanButtonStatus()
             view.slideLeftViews(delay: 0.5)
         }
     }
@@ -31,7 +32,8 @@ class HistoryViewController: UIViewController {
     func setupUI() {
         title = "Test History"
         navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Clean", style: .done, target: self, action: #selector(cleanListAction))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Clean", style: .done, target: self, action: #selector(cleanButtonAction))
+        updateCleanButtonStatus()
     }
     
     func setupTableView() {
@@ -41,14 +43,32 @@ class HistoryViewController: UIViewController {
         tableView.updateContentStatus()
     }
     
-    @objc private func cleanListAction() {
+    func updateCleanButtonStatus() {
+        navigationItem.rightBarButtonItem?.isEnabled = testData.isEmpty ? false : true
+    }
+
+    @objc private func cleanButtonAction() {
+        showCleanPromptAlert()
+    }
+    
+    func cleanButtonActionFunctionality() {
         testData = []
         saveData(item: testData)
         DispatchQueue.main.async {[self] in
             tableView.reloadData()
             tableView.updateContentStatus()
+            updateCleanButtonStatus()
         }
     }
+    
+    fileprivate func showCleanPromptAlert() {
+        AlertManager.shared.showAlert(parent: self, title: "Warning", body: "Are you sure to clear test results?",buttonTitles: ["Yes"], showCancelButton: true, completion: { [self] buttonIndex in
+            if buttonIndex == 0 {
+                cleanButtonActionFunctionality()
+            }
+        })
+    }
+    
 }
 
 //MARK: Setup TableView:

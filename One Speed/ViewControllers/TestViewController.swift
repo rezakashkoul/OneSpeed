@@ -63,7 +63,7 @@ class TestViewController: UIViewController {
         tabBarController?.tabBar.items![1].image = UIImage(named: "history")
         testQualitySegment.selectedSegmentIndex = 0
         testQualitySegment.setTitle("Fast", forSegmentAt: 0)
-        testQualitySegment.setTitle("Relible", forSegmentAt: 1)
+        testQualitySegment.setTitle("Reliable", forSegmentAt: 1)
         testButton.layer.cornerRadius = 12
         testButton.clipsToBounds = true
         setupGuageView()
@@ -85,7 +85,6 @@ class TestViewController: UIViewController {
     
     fileprivate func setupGuageView() {
         let width = UIScreen.main.bounds.width
-        
         guageViewConfiguration(view: gaugeSlider)
         gaugeSlider.frame = CGRect(x: width * 0.05, y: 150, width: width * 0.9, height: width * 0.9)
         view.addSubview(gaugeSlider)
@@ -185,9 +184,7 @@ class TestViewController: UIViewController {
                 startUpload()
             case .success(let megabytesPerSecond):
                 print(megabytesPerSecond)
-                let downloadResult = megabytesPerSecond.rounded(decimalPoint: 2)
-                testResult.download = downloadResult.description
-                testResult.download = calculateAverageSpeed(list: valueList).description
+                testResult.download = calculateAverageSpeed(list: valueList).rounded(decimalPoint: 1).description
                 startUpload()
             }
         }
@@ -246,7 +243,7 @@ class TestViewController: UIViewController {
                     }
                     isTesting = false
                     print(calculateAverageSpeed(list: valueList), "uploadspeed")
-                    testResult.upload = calculateAverageSpeed(list: valueList).description
+                    testResult.upload = calculateAverageSpeed(list: valueList).rounded(decimalPoint: 1).description
                 }
             }
             if let error = error {
@@ -267,7 +264,7 @@ class TestViewController: UIViewController {
                 }
                 isTesting = false
                 print(calculateAverageSpeed(list: valueList), "uploadspeed")
-                testResult.upload = calculateAverageSpeed(list: valueList).description
+                testResult.upload = calculateAverageSpeed(list: valueList).rounded(decimalPoint: 1).description
                 DispatchQueue.main.async {[self] in
                     updateUI()
                 }
