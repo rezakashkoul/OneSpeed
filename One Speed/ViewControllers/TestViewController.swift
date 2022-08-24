@@ -176,11 +176,6 @@ class TestViewController: UIViewController {
         }
     }
     
-    func calculateMomentarySpeed(value: Int) -> String {
-        let result = (Double(value) / 1024.0 / 1024.0).rounded(decimalPoint: 2).description + "MB/S"
-        return result
-    }
-    
     func calculateAverageSpeed(list value: [Double])->Double {
         let sum = valueList.reduce(0, +)
         print("valueList", valueList)
@@ -296,11 +291,13 @@ extension TestViewController: URLSessionDataDelegate, URLSessionDelegate {
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         bytesReceived += data.count
         DispatchQueue.main.async { [self] in
-            let value = (Double(data.count) / 1024.0 / 1024.0).rounded(decimalPoint: 2)
-            statusLabel.text = "Testing Download Speed..." //calculateSpeed(speed: data.count)
-            gaugeSlider.setCurrentValue(value*100, animated: true)
+//            let value = (Double(data.count) / 1024.0 / 1024.0).rounded(decimalPoint: 2)
+            let value = ByteCountFormatter().string(fromByteCount: Int64(data.count))
+            print(value)
+            statusLabel.text = "Testing Download Speed..."
+//            gaugeSlider.setCurrentValue(value, animated: true)
             
-            valueList.append(value)
+//            valueList.append(value)
             print("valueList", valueList)
         }
     }

@@ -8,11 +8,26 @@
 import Foundation
 import UIKit
 
+extension Data {
+    func getSize()-> String {
+        let countBytes = ByteCountFormatter()
+        countBytes.allowedUnits = [.useAll]
+        countBytes.countStyle = .file
+        let fileSize = countBytes.string(fromByteCount: Int64(self.count))
+        return fileSize
+    }
+}
+
 extension Double {
-    
     func rounded(decimalPoint: Int) -> Double {
         let num = pow(10, Double(decimalPoint))
         return (self * num).rounded() / num
+    }
+}
+
+extension String {
+    func getDigit() -> Double? {
+        return Double(self.components(separatedBy: CharacterSet.decimalDigits.inverted).joined())
     }
 }
 
@@ -25,7 +40,6 @@ extension Formatter {
 }
 
 extension Date {
-    
     func localizedDescription(date dateStyle: DateFormatter.Style = .medium,
                               time timeStyle: DateFormatter.Style = .medium,
                               in timeZone: TimeZone = .current,
@@ -57,7 +71,6 @@ extension Date {
 }
 
 extension UITableView {
-    
     func updateContentStatus() {
         if visibleCells.count == 0 {
             let label = UILabel(frame: CGRect(x: 0, y: 0, width: self.bounds.size.width, height: self.bounds.size.height))
